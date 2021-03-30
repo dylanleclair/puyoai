@@ -202,6 +202,32 @@ class PuyoEnv:
     def projected_score (self):
         return (10 * self.chain_size) * (get_color_bonus(self.diff_colors_in_chain) + get_group_bonus(self.chain_group_sizes))
 
+    # feeds the board into the neural network
+    # gets the output of this, and parses the output into a list
+    # indices: 0 = left, 1 = down, 2 = right, 3 = rotate 
+    def act(self):
+
+        board_as_floats = []
+
+        for i in range(self.h):
+            for j in range(self.w):
+                board_as_floats.append(map_board_value_to_float(board[i][j]))
+        
+        # feed the board to the nn, get 'actions' decided by nn
+        actions = net.feed_forward(board_as_floats)
+
+        # round the values to the nearest integer
+        return [int(round(x)) for x in actions]
+
+def map_board_value_to_float(v):
+    if v == ' ':
+        return 0.0
+    if v == '1':
+        return 1.0
+    if v == '2':
+        return 2.0
+    if v == '3':
+        return 3.0
 
 
 #  https://puyonexus.com/wiki/Scoring#Color_Bonus
