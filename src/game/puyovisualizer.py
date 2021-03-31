@@ -5,7 +5,6 @@ import puyoenv
 
 
 class Player(puyoenv.PuyoEnv):
-    offset = (000, 000)
     controller = {'left': pygame.K_LEFT,
                   'down': pygame.K_DOWN,
                   'right': pygame.K_RIGHT,
@@ -22,13 +21,20 @@ class Game:
                      '4': pygame.transform.scale(pygame.image.load('resource/y.png').convert_alpha(), (24, 24))}
         self.x = pygame.image.load('resource/x.png').convert_alpha()
         
-        # create a player 
-        self.player1 = Player(puyoenv.chain_19)
 
+        self.players = []
+
+        for i in range(5):
+            self.players.append(Player(x_offset= i * 6 * 24, y_offset=0))
+
+        # draws a white background for each player
         self.screen.fill((255, 255, 255),
-                         (self.player1.offset[0], self.player1.offset[1],
-                          self.player1.w * 24, self.player1.h * 24))
-        self.draw(self.player1)
+                         (self.players[0].offset[0], self.players[0].offset[1],
+                          self.players[0].w * 24 * len(self.players), self.players[0].h * 24))
+
+        for p in self.players:
+            self.draw(p)
+
         pygame.display.update()
         self.clock = pygame.time.Clock()
 
@@ -54,67 +60,54 @@ class Game:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     sys.exit()
-            # if the player is falling -- update every 3 frames
-            if self.player1.falling and not (counter % 3):
-                # get player input
-                keys = pygame.key.get_pressed()
-
-                # we will instead use the neural network to determine the actions!
-                
-                # flatten the board so it can be fed into the neural network!
-                self.net.feed_forward() 
-
-                player.net
-                keys[self.player1.controller['left']] = 1 # get the rounded value of nn output
 
 
-                col1, row1 = self.player1.falling[0]['pos']
-                col2, row2 = self.player1.falling[1]['pos']
-                if keys[self.player1.controller['left']]:
-                    if (row1 > 0 and self.player1.board[col1][row1 - 1] == ' ') and (
-                            row2 > 0 and self.player1.board[col2][row2 - 1] == ' '):
-                        self.player1.falling[0]['pos'] = (col1, row1 - 1)
-                        self.player1.falling[1]['pos'] = (col2, row2 - 1)
-                if keys[self.player1.controller['right']]:
-                    if (row1 < self.player1.w - 1 and self.player1.board[col1][row1 + 1] == ' ') and (
-                            row2 < self.player1.w - 1 and self.player1.board[col2][row2 + 1] == ' '):
-                        self.player1.falling[0]['pos'] = (col1, row1 + 1)
-                        self.player1.falling[1]['pos'] = (col2, row2 + 1)
-                if keys[self.player1.controller['down']]:
-                    if (col1 < self.player1.h - 1 and self.player1.board[col1 + 1][row1] == ' ') and (
-                            col2 < self.player1.h - 1 and self.player1.board[col2 + 1][row2] == ' '):
-                        self.player1.falling[0]['pos'] = (col1 + 1, row1)
-                        self.player1.falling[1]['pos'] = (col2 + 1, row2)
-                if keys[self.player1.controller['roll']]:
-                    col1, row1 = self.player1.falling[0]['pos']
-                    col2, row2 = self.player1.falling[1]['pos']
-                    a1 = col1 - col2
-                    a2 = row1 - row2
-                    if (row1 + a1 in (-1, self.player1.w)) or col1 - a2 == self.player1.h or \
-                            self.player1.board[col1 - a2][row1 + a1] != ' ':
-                        pass
-                    else:
-                        self.player1.falling[1]['pos'] = (col1 - a2, row1 + a1)
-            if not (counter % 50): # updates the board
-                self.player1.update(display=True)
-                
-                print(self.player1.projected_score())
-                print(self.player1.score) 
-                print(self.player1.board)
-                #print(self.player1.puyo_to_remove)
-            # draws the screen
-            self.screen.fill((255, 255, 255),
-                             (self.player1.offset[0],
-                              self.player1.offset[1],
-                              self.player1.w * 24,
-                              self.player1.h * 24)
-                             )
-            # draws the player
-            self.draw(self.player1)
-            pygame.display.update()
-            # reset frame counter
-            if counter == 300:
-                counter = 0
+            for player in self.players:
+                if player.falling and not (counter % 3):
+                    actions = player.act()
+                    
+                    col1, row1 = player.falling[0]['pos']
+                    col2, row2 = player.falling[1]['pos']
+                    if actions['left']:
+                        if (row1 > 0 and player.board[col1][row1 - 1] == ' ') and (
+                                row2 > 0 and player.board[col2][row2 - 1] == ' '):
+                            player.falling[0]['pos'] = (col1, row1 - 1)
+                            player.falling[1]['pos'] = (col2, row2 - 1)
+                    if actions['right']:
+                        if (row1 < player.w - 1 and player.board[col1][row1 + 1] == ' ') and (
+                                row2 < player.w - 1 and player.board[col2][row2 + 1] == ' '):
+                            player.falling[0]['pos'] = (col1, row1 + 1)
+                            player.falling[1]['pos'] = (col2, row2 + 1)
+                    if actions['down']:
+                        if (col1 < player.h - 1 and player.board[col1 + 1][row1] == ' ') and (
+                                col2 < player.h - 1 and player.board[col2 + 1][row2] == ' '):
+                            player.falling[0]['pos'] = (col1 + 1, row1)
+                            player.falling[1]['pos'] = (col2 + 1, row2)
+                    if actions['roll']:
+                        col1, row1 = player.falling[0]['pos']
+                        col2, row2 = player.falling[1]['pos']
+                        a1 = col1 - col2
+                        a2 = row1 - row2
+                        if (row1 + a1 in (-1, player.w)) or col1 - a2 == player.h or \
+                                player.board[col1 - a2][row1 + a1] != ' ':
+                            pass
+                        else:
+                            player.falling[1]['pos'] = (col1 - a2, row1 + a1)
+                if not (counter % 50): # updates the board
+                    player.update(display=True)
+                # draws the screen
+                self.screen.fill((255, 255, 255),
+                                (player.offset[0],
+                                player.offset[1],
+                                player.w * 24,
+                                player.h * 24)
+                                )
+                # draws the player
+                self.draw(player)
+                pygame.display.update()
+                # reset frame counter
+                if counter == 300:
+                    counter = 0
 
 
 if __name__ == '__main__':
