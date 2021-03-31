@@ -207,19 +207,24 @@ class PuyoEnv:
     # gets the output of this, and parses the output into a list
     # indices: 0 = left, 1 = down, 2 = right, 3 = rotate 
     def act(self):
-
         board_as_floats = []
 
         for i in range(self.h):
             for j in range(self.w):
                 board_as_floats.append(map_board_value_to_float(self.board[i][j]))
-        
-        print("size of board", len(board_as_floats))
+
         # feed the board to the nn, get 'actions' decided by nn
         actions = self.net.feed_forward(board_as_floats)
 
-        # round the values to the nearest integer
-        return [int(round(x)) for x in actions]
+        # round the values to the nearest integer   
+        actions = [int(round(x)) for x in actions]
+
+        return {
+            'left':actions[0],
+            'right':actions[1],
+            'down':actions[2],
+            'roll':actions[3]
+        }
 
 def map_board_value_to_float(v):
     if v == ' ':
@@ -230,7 +235,9 @@ def map_board_value_to_float(v):
         return 2.0
     if v == '3':
         return 3.0
-
+    if v == '4':
+        return 4.0
+    
 
 #  https://puyonexus.com/wiki/Scoring#Color_Bonus
 '''
