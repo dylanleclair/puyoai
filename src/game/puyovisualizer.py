@@ -12,7 +12,7 @@ class Player(puyoenv.PuyoEnv):
     
 class Game:
     
-    def __init__(self, screen=(640, 480)):
+    def __init__(self, screen=(864, 480)):
         pygame.init()
         self.screen = pygame.display.set_mode(screen)
         self.puyo = {'1': pygame.transform.scale(pygame.image.load('resource/r.png').convert_alpha(), (24, 24)),
@@ -24,7 +24,7 @@ class Game:
 
         self.players = []
 
-        for i in range(5):
+        for i in range(1):
             self.players.append(Player(x_offset= i * 6 * 24, y_offset=0))
 
         # draws a white background for each player
