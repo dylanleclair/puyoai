@@ -6,10 +6,11 @@ class PuyoEnv:
     w = 6
     h = 13
 
-    def __init__(self, template=None):
+    def __init__(self, x_offset, y_offset,template=None):
         self.board = [[' ' for x in range(self.w)] for y in range(self.h)]
         self.prev_board = [[' ' for x in range(self.w)] for y in range(self.h)]
 
+        self.offset = (x_offset, y_offset)
         # create a neural network for the player
         # first layer = size of input (ie: the size of the board)
         # several internal layers, each with an experimental size
@@ -211,10 +212,11 @@ class PuyoEnv:
 
         for i in range(self.h):
             for j in range(self.w):
-                board_as_floats.append(map_board_value_to_float(board[i][j]))
+                board_as_floats.append(map_board_value_to_float(self.board[i][j]))
         
+        print("size of board", len(board_as_floats))
         # feed the board to the nn, get 'actions' decided by nn
-        actions = net.feed_forward(board_as_floats)
+        actions = self.net.feed_forward(board_as_floats)
 
         # round the values to the nearest integer
         return [int(round(x)) for x in actions]
