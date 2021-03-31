@@ -24,7 +24,7 @@ class Game:
 
         self.players = []
 
-        for i in range(1):
+        for i in range(6):
             self.players.append(Player(x_offset= i * 6 * 24, y_offset=0))
 
         # draws a white background for each player
@@ -61,54 +61,70 @@ class Game:
                 if event.type == pygame.QUIT:
                     sys.exit()
 
-
-            for player in self.players:
-                if player.falling and not (counter % 3):
-                    actions = player.act()
-                    
-                    col1, row1 = player.falling[0]['pos']
-                    col2, row2 = player.falling[1]['pos']
-                    if actions['left']:
-                        if (row1 > 0 and player.board[col1][row1 - 1] == ' ') and (
-                                row2 > 0 and player.board[col2][row2 - 1] == ' '):
-                            player.falling[0]['pos'] = (col1, row1 - 1)
-                            player.falling[1]['pos'] = (col2, row2 - 1)
-                    if actions['right']:
-                        if (row1 < player.w - 1 and player.board[col1][row1 + 1] == ' ') and (
-                                row2 < player.w - 1 and player.board[col2][row2 + 1] == ' '):
-                            player.falling[0]['pos'] = (col1, row1 + 1)
-                            player.falling[1]['pos'] = (col2, row2 + 1)
-                    if actions['down']:
-                        if (col1 < player.h - 1 and player.board[col1 + 1][row1] == ' ') and (
-                                col2 < player.h - 1 and player.board[col2 + 1][row2] == ' '):
-                            player.falling[0]['pos'] = (col1 + 1, row1)
-                            player.falling[1]['pos'] = (col2 + 1, row2)
-                    if actions['roll']:
+            if get_finished_player_count(players) > 3:
+                for player in self.players:
+                    if player.falling and not (counter % 3):
+                        actions = player.act()
+                        
                         col1, row1 = player.falling[0]['pos']
                         col2, row2 = player.falling[1]['pos']
-                        a1 = col1 - col2
-                        a2 = row1 - row2
-                        if (row1 + a1 in (-1, player.w)) or col1 - a2 == player.h or \
-                                player.board[col1 - a2][row1 + a1] != ' ':
-                            pass
-                        else:
-                            player.falling[1]['pos'] = (col1 - a2, row1 + a1)
-                if not (counter % 50): # updates the board
-                    player.update(display=True)
-                # draws the screen
-                self.screen.fill((255, 255, 255),
-                                (player.offset[0],
-                                player.offset[1],
-                                player.w * 24,
-                                player.h * 24)
-                                )
-                # draws the player
-                self.draw(player)
-                pygame.display.update()
-                # reset frame counter
-                if counter == 300:
-                    counter = 0
+                        if actions['left']:
+                            if (row1 > 0 and player.board[col1][row1 - 1] == ' ') and (
+                                    row2 > 0 and player.board[col2][row2 - 1] == ' '):
+                                player.falling[0]['pos'] = (col1, row1 - 1)
+                                player.falling[1]['pos'] = (col2, row2 - 1)
+                        if actions['right']:
+                            if (row1 < player.w - 1 and player.board[col1][row1 + 1] == ' ') and (
+                                    row2 < player.w - 1 and player.board[col2][row2 + 1] == ' '):
+                                player.falling[0]['pos'] = (col1, row1 + 1)
+                                player.falling[1]['pos'] = (col2, row2 + 1)
+                        if actions['down']:
+                            if (col1 < player.h - 1 and player.board[col1 + 1][row1] == ' ') and (
+                                    col2 < player.h - 1 and player.board[col2 + 1][row2] == ' '):
+                                player.falling[0]['pos'] = (col1 + 1, row1)
+                                player.falling[1]['pos'] = (col2 + 1, row2)
+                        if actions['roll']:
+                            col1, row1 = player.falling[0]['pos']
+                            col2, row2 = player.falling[1]['pos']
+                            a1 = col1 - col2
+                            a2 = row1 - row2
+                            if (row1 + a1 in (-1, player.w)) or col1 - a2 == player.h or \
+                                    player.board[col1 - a2][row1 + a1] != ' ':
+                                pass
+                            else:
+                                player.falling[1]['pos'] = (col1 - a2, row1 + a1)
+                    if not (counter % 50): # updates the board
+                        player.update(display=True)
+                    # draws the screen
+                    self.screen.fill((255, 255, 255),
+                                    (player.offset[0],
+                                    player.offset[1],
+                                    player.w * 24,
+                                    player.h * 24)
+                                    )
+                    # draws the player
+                    self.draw(player)
+                    pygame.display.update()
+                    # reset frame counter
+                    if counter == 300:
+                        counter = 0
+            else:
+                # next generation baby
+                players.sort(key=lambda x: x.net.fitness, reverse=False)
+                
+                # mutate
+
+                # assign new values to nets
+
+                # run again
 
 
 if __name__ == '__main__':
     Game().play()
+
+def get_finished_player_count(players):
+    playersDone = 0
+    for player in players:
+        if player.finished:
+            playersDone+=1
+    return playersDone

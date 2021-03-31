@@ -7,6 +7,9 @@ class PuyoEnv:
     h = 13
 
     def __init__(self, x_offset, y_offset,template=None):
+
+        self.finished = False;
+
         self.board = [[' ' for x in range(self.w)] for y in range(self.h)]
         self.prev_board = [[' ' for x in range(self.w)] for y in range(self.h)]
 
@@ -154,8 +157,9 @@ class PuyoEnv:
                 self.chain_size = 0
                 self.chain_group_sizes = []
                 self.diff_colors_in_chain = set()
-                if self.board[1][2] != ' ':
+                if self.board[1][2] != ' ' and not self.finished:
                     print("GAME OVER")
+                    self.finished = False;
                     return False
                 else:
                     colour0, colour1 = self.buffer.pop(0)
