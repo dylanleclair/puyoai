@@ -62,6 +62,49 @@ class neural_network:
     def set_fitness(self,fitness):
         self.fitness = fitness
 
+
+    def mutate(self):
+        print('mutation')
+    
+    def crossover(self):
+        print('crossover')
+
+    def save(self):
+        file = open('optimal_model.txt', 'w')
+        
+        try:
+            data = []
+            for i in range(len(self.biases)):
+                for j in range(len(self.biases[i])):
+                    data.append(biases[i][j])
+
+            for i in range(len(self.weights)):
+                for j in range(len(self.weights[i])):
+                    for k in range(len(self.weights[i][j])):
+                        data.append(self.weights[i][j][k])
+
+            file.writelines(data)
+        finally:
+            file.close()
+
+    def load(self):
+        file = open('optimal_model.txt', 'r')
+        try:
+            index = 0
+            lines = file.readlines()
+            for i in range(len(self.biases)):
+                for j in range(len(self.biases[i])):
+                    self.biases[i][j] = float(lines[index])
+                    index+=1
+            
+            for i in range(len(self.weights)):
+                for j in range(len(self.weights[i])):
+                    for k in range(len(self.weights[i][j])):
+                        self.weights[i][j][k] = float(lines[index])
+                        index+=1
+        finally:
+            file.close()
+
 # sigmoid
 def rectified(x):
 	return max(0.0, x)

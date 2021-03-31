@@ -1,8 +1,14 @@
 import sys
 import pygame
 import puyoenv
+import random
 
-
+def get_finished_player_count(players):
+    playersDone = 0
+    for player in players:
+        if player.finished:
+            playersDone+=1
+    return playersDone
 
 class Player(puyoenv.PuyoEnv):
     controller = {'left': pygame.K_LEFT,
@@ -61,7 +67,7 @@ class Game:
                 if event.type == pygame.QUIT:
                     sys.exit()
 
-            if get_finished_player_count(players) > 3:
+            if get_finished_player_count(self.players) > 3:
                 for player in self.players:
                     if player.falling and not (counter % 3):
                         actions = player.act()
@@ -110,21 +116,21 @@ class Game:
                         counter = 0
             else:
                 # next generation baby
-                players.sort(key=lambda x: x.net.fitness, reverse=False)
-                
+                self.players.sort(key=lambda x: x.net.fitness, reverse=False)
+
                 # mutate
+                midpoint = len(players) // 2
+                
+                fit = self.players[:midpoint]
 
+                index = midpoint
                 # assign new values to nets
-
+                while index < len(players) - 1:
+                    # replace each unfit network with either a mutated or crossed-over copy of the fitter networks
+                    players[index] =  random.choice[fit].deepcopy().mutate()
                 # run again
 
 
 if __name__ == '__main__':
     Game().play()
 
-def get_finished_player_count(players):
-    playersDone = 0
-    for player in players:
-        if player.finished:
-            playersDone+=1
-    return playersDone
