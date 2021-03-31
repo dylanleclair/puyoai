@@ -31,8 +31,7 @@ class neural_network:
 
     # creates topology of network as specified by layers
     def __init__(self, layers):
-        for i in (layers):
-           self.layers.append(i)
+        self.layers = layers
         
         self.init_neurons()
         self.init_biases()
@@ -40,6 +39,7 @@ class neural_network:
     
     # alters the network by feeding inputs through it, with a relu activation function
     def feed_forward(self, inputs):
+        
         for i in range(len(inputs)):
             self.neurons[0][i] = inputs[i]
 
@@ -47,16 +47,16 @@ class neural_network:
             layer = i - 1 # need to calculate sum of all values in previous layer according to bias
             for j in range(len(self.neurons[i])):
                 val = 0.0 # the sum of the activations of all nodes in the previous layer
-                for k in range(len(neurons[i-1])):
+                for k in range(len(self.neurons[i-1])):
                     val += self.weights[i-1][j][k] * self.neurons[i-1][k]; # the sum of an indivual node in previous layer
 
-            if layer == len(self.layers -2):
+            if layer == len(self.layers)-2:
                 self.neurons[i][j] = sigmoid(val + self.biases[i][j]) # feed it forward!
             else:
                 self.neurons[i][j] = rectified(val + self.biases[i][j]) # feed it forward!
 
 
-        return self.neurons[len(neurons -1)] # return the last layer in the network as the outputs
+        return self.neurons[len(self.neurons) -1] # return the last layer in the network as the outputs
 
     # allows the fitness of the neural network to be set
     def set_fitness(self,fitness):
