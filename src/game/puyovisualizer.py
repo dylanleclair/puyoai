@@ -63,43 +63,44 @@ class Game:
         # primary game loop
         while True:
             counter += 1 # counts ticks
-            self.clock.tick(60) # 60ms between calls
+            self.clock.tick() # 60ms between calls
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     sys.exit()
 
             if get_finished_player_count(self.players) < 3:
                 for player in self.players:
-                    if player.falling and not (counter % 3):
-                        actions = player.act()
-                        
-                        col1, row1 = player.falling[0]['pos']
-                        col2, row2 = player.falling[1]['pos']
-                        if actions['left']:
-                            if (row1 > 0 and player.board[col1][row1 - 1] == ' ') and (
-                                    row2 > 0 and player.board[col2][row2 - 1] == ' '):
-                                player.falling[0]['pos'] = (col1, row1 - 1)
-                                player.falling[1]['pos'] = (col2, row2 - 1)
-                        if actions['right']:
-                            if (row1 < player.w - 1 and player.board[col1][row1 + 1] == ' ') and (
-                                    row2 < player.w - 1 and player.board[col2][row2 + 1] == ' '):
-                                player.falling[0]['pos'] = (col1, row1 + 1)
-                                player.falling[1]['pos'] = (col2, row2 + 1)
-                        if actions['down']:
-                            if (col1 < player.h - 1 and player.board[col1 + 1][row1] == ' ') and (
-                                    col2 < player.h - 1 and player.board[col2 + 1][row2] == ' '):
-                                player.falling[0]['pos'] = (col1 + 1, row1)
-                                player.falling[1]['pos'] = (col2 + 1, row2)
-                        if actions['roll']:
+                    if not player.finished:
+                        if player.falling and not (counter % 3):
+                            actions = player.act()
+                            
                             col1, row1 = player.falling[0]['pos']
                             col2, row2 = player.falling[1]['pos']
-                            a1 = col1 - col2
-                            a2 = row1 - row2
-                            if (row1 + a1 in (-1, player.w)) or col1 - a2 == player.h or \
-                                    player.board[col1 - a2][row1 + a1] != ' ':
-                                pass
-                            else:
-                                player.falling[1]['pos'] = (col1 - a2, row1 + a1)
+                            if actions['left']:
+                                if (row1 > 0 and player.board[col1][row1 - 1] == ' ') and (
+                                        row2 > 0 and player.board[col2][row2 - 1] == ' '):
+                                    player.falling[0]['pos'] = (col1, row1 - 1)
+                                    player.falling[1]['pos'] = (col2, row2 - 1)
+                            if actions['right']:
+                                if (row1 < player.w - 1 and player.board[col1][row1 + 1] == ' ') and (
+                                        row2 < player.w - 1 and player.board[col2][row2 + 1] == ' '):
+                                    player.falling[0]['pos'] = (col1, row1 + 1)
+                                    player.falling[1]['pos'] = (col2, row2 + 1)
+                            if actions['down']:
+                                if (col1 < player.h - 1 and player.board[col1 + 1][row1] == ' ') and (
+                                        col2 < player.h - 1 and player.board[col2 + 1][row2] == ' '):
+                                    player.falling[0]['pos'] = (col1 + 1, row1)
+                                    player.falling[1]['pos'] = (col2 + 1, row2)
+                            if actions['roll']:
+                                col1, row1 = player.falling[0]['pos']
+                                col2, row2 = player.falling[1]['pos']
+                                a1 = col1 - col2
+                                a2 = row1 - row2
+                                if (row1 + a1 in (-1, player.w)) or col1 - a2 == player.h or \
+                                        player.board[col1 - a2][row1 + a1] != ' ':
+                                    pass 
+                                else:
+                                    player.falling[1]['pos'] = (col1 - a2, row1 + a1)
                     if not (counter % 50): # updates the board
                         player.update(display=True)
                     # draws the screen

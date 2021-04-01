@@ -19,7 +19,7 @@ class PuyoEnv:
         # several internal layers, each with an experimental size
         # finally an output layer, with 4 outputs (one corresponding to each action)
 
-        self.net = neuralnetwork.neural_network([self.w * self.h, 30,30,30, 4])
+        self.net = neuralnetwork.neural_network([self.w * self.h, 30, 4])
 
         # scoring variables
         self.chain = 0 # the current chain length
@@ -147,40 +147,45 @@ class PuyoEnv:
 
     # the update function of the puyo board
     def update(self, display=False):
-        if self.falling is None:
-            self.prev_board = copy.deepcopy(self.board)
-            self.move(display=display)
-            if self.board == self.prev_board:
-                self.update_score() # update the score
-                # reset chain specific variables
-                self.chain = 0 
-                self.chain_size = 0
-                self.chain_group_sizes = []
-                self.diff_colors_in_chain = set()
-                # the logic for checking if a player is done
-                if self.board[1][2] != ' ' and not self.finished:
-                    print("GAME OVER")
-                    self.finished = True;
-                    return False
-                else:
-                    colour0, colour1 = self.buffer.pop(0)
-                    self.falling = ({'colour': colour0, 'pos': (-1, 2)},
-                                    {'colour': colour1, 'pos': (0, 2)})
-                    self.buffer.append(self.next())
-        else:
-            col1, row1 = self.falling[0]['pos']
-            col2, row2 = self.falling[1]['pos']
-
-            if (col1 == (self.h - 1) or self.board[col1 + 1][row1] != ' '
-                    or col2 == (self.h - 1) or self.board[col2 + 1][row2] != ' '):
-                self.board[col1][row1] = self.falling[0]['colour']
-                self.board[col2][row2] = self.falling[1]['colour']
-                self.falling = None
+        if not self.finished:
+                
+            if self.falling is None:
+                self.prev_board = copy.deepcopy(self.board)
+                self.move(display=display)
+                if self.board == self.prev_board:
+                    self.update_score() # update the score
+                    # reset chain specific variables
+                    self.chain = 0 
+                    self.chain_size = 0
+                    self.chain_group_sizes = []
+                    self.diff_colors_in_chain = set()
+                    # the logic for checking if a player is done
+                    if self.board[1][2] != ' ' and not self.finished:
+                        print("GAME OVER")
+                        self.finished = True;
+                        return False
+                    else:
+                        colour0, colour1 = self.buffer.pop(0)
+                        self.falling = ({'colour': colour0, 'pos': (-1, 2)},
+                                        {'colour': colour1, 'pos': (0, 2)})
+                        self.buffer.append(self.next())
             else:
-                self.falling[0]['pos'] = (col1 + 1, row1)
-                self.falling[1]['pos'] = (col2 + 1, row2)
+                col1, row1 = self.falling[0]['pos']
+                col2, row2 = self.falling[1]['pos']
+                if (col1 < 0 or col2 < 0 or row1 < 0 or row2 < 0): 
+                    self.falling[0]['pos'] = (col1 + 1, row1)
+                    self.falling[1]['pos'] = (col2 + 1, row2)
+                    return True
+                if (col1 == (self.h - 1) or self.board[col1 + 1][row1] != ' '
+                        or col2 == (self.h - 1) or self.board[col2 + 1][row2] != ' '):
+                    self.board[col1][row1] = self.falling[0]['colour']
+                    self.board[col2][row2] = self.falling[1]['colour']
+                    self.falling = None
+                else:
+                    self.falling[0]['pos'] = (col1 + 1, row1)
+                    self.falling[1]['pos'] = (col2 + 1, row2)
 
-        return True
+            return True
 
     def place(self, move):
         pos0, pos1 = self.moves[move]

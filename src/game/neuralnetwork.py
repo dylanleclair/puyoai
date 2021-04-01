@@ -19,7 +19,7 @@ class neural_network:
     def init_biases(self):
         self.biases = []
         for i in self.layers:
-            self.biases.append([random.uniform(-0.5,0.5) for j in range(i)])
+            self.biases.append([random.uniform(-0.1,0.1) for j in range(i)])
 
     def init_weights(self):
         self.weights = []
@@ -29,7 +29,7 @@ class neural_network:
             for j in range(len(self.neurons[i])):
                 neuron_weights = []
                 for k in range(neurons_previous_layer):
-                    neuron_weights.append(random.uniform(-0.5,0.5))
+                    neuron_weights.append(random.uniform(-1.0,1.0))
                 layers_weights_list.append(neuron_weights)
             self.weights.append(layers_weights_list)
 
@@ -54,13 +54,12 @@ class neural_network:
                 for k in range(len(self.neurons[i-1])):
                     val += self.weights[i-1][j][k] * self.neurons[i-1][k]; # the sum of an indivual node in previous layer
 
-            if layer == len(self.layers)-2:
+                #if layer == len(self.layers)-2:
                 self.neurons[i][j] = sigmoid(val + self.biases[i][j]) # feed it forward!
-            else:
-                self.neurons[i][j] = rectified(val + self.biases[i][j]) # feed it forward!
+                #else:
+                #    self.neurons[i][j] = rectified(val + self.biases[i][j]) # feed it forward!
 
-
-        return self.neurons[len(self.neurons) -1] # return the last layer in the network as the outputs
+        return self.neurons[1] # return the last layer in the network as the outputs
 
     # allows the fitness of the neural network to be set
     def set_fitness(self,fitness):
