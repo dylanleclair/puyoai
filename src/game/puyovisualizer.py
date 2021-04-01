@@ -9,8 +9,6 @@ def get_finished_player_count(players):
     for player in players:
         if player.finished:
             playersDone+=1
-    if playersDone>0:
-        print(playersDone)
     return playersDone
 
 class Player(puyoenv.PuyoEnv):
@@ -118,6 +116,10 @@ class Game:
                     if counter == 300:
                         counter = 0
             else:
+
+                for player in self.players:
+                    player.net.set_fitness(player.score)
+
                 # next generation baby
                 self.players.sort(key=lambda x: x.net.fitness, reverse=False)
 
@@ -135,7 +137,7 @@ class Game:
                     self.players[index].net.mutate()
                 
                 # run again
-
+                
 
 if __name__ == '__main__':
     Game().play()

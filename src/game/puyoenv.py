@@ -157,9 +157,10 @@ class PuyoEnv:
                 self.chain_size = 0
                 self.chain_group_sizes = []
                 self.diff_colors_in_chain = set()
+                # the logic for checking if a player is done
                 if self.board[1][2] != ' ' and not self.finished:
                     print("GAME OVER")
-                    self.finished = False;
+                    self.finished = True;
                     return False
                 else:
                     colour0, colour1 = self.buffer.pop(0)
@@ -194,6 +195,7 @@ class PuyoEnv:
         self.chain = 0
         self.move()
         if self.board[1][2] != ' ':
+            self.finished = True
             print("GAME OVER")
             return False
         else:

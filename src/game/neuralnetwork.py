@@ -96,12 +96,12 @@ class neural_network:
             data = []
             for i in range(len(self.biases)):
                 for j in range(len(self.biases[i])):
-                    data.append( str(self.biases[i][j]) )
+                    data.append( str(self.biases[i][j]) + '\n')
 
             for i in range(len(self.weights)):
                 for j in range(len(self.weights[i])):
                     for k in range(len(self.weights[i][j])):
-                        data.append( str(self.weights[i][j][k]) )
+                        data.append( str(self.weights[i][j][k]) + '\n' )
 
             file.writelines(data)
         finally:
