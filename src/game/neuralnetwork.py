@@ -7,6 +7,10 @@ class neural_network:
 
     fitness = 0.0
 
+    MUTATION_RATE = 0.1
+
+    MUTATION_STRENGTH = 0.7
+
     def init_neurons(self):
         self.neurons = []
         for i in self.layers:
@@ -65,7 +69,23 @@ class neural_network:
 
     def mutate(self):
         print('mutation')
-    
+        # randomly mutate the biases
+        # recall that the biases are a number associated with each node
+        for i in range(len(self.biases)):
+            for j in range(len(self.biases[i])):
+                if (random.random() < self.MUTATION_RATE):
+                    self.biases[i][j] +=  random.uniform(-self.MUTATION_STRENGTH, self.MUTATION_STRENGTH)
+
+
+        # randomly mutate the weights
+        # recall that the weights are the "edges" between the nodes of two layers in a network. 
+
+        for i in range(len(self.weights)):
+            for j in range(len(self.weights[i])):
+                for k in range(len(self.weights[i][j])):
+                    if (random.random() < self.MUTATION_RATE):
+                        self.weights[i][j][k] += random.uniform(-self.MUTATION_RATE, self.MUTATION_STRENGTH)
+
     def crossover(self):
         print('crossover')
 
@@ -76,12 +96,12 @@ class neural_network:
             data = []
             for i in range(len(self.biases)):
                 for j in range(len(self.biases[i])):
-                    data.append(biases[i][j])
+                    data.append( str(self.biases[i][j]) )
 
             for i in range(len(self.weights)):
                 for j in range(len(self.weights[i])):
                     for k in range(len(self.weights[i][j])):
-                        data.append(self.weights[i][j][k])
+                        data.append( str(self.weights[i][j][k]) )
 
             file.writelines(data)
         finally:
