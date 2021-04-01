@@ -3,7 +3,7 @@ import pygame
 import puyoenv
 import random
 import copy
-
+import neuralnetwork
 def get_finished_player_count(players):
     playersDone = 0
     for player in players:
@@ -33,7 +33,8 @@ class Game:
 
         for i in range(6):
             self.players.append(Player(x_offset= i * 6 * 24, y_offset=0))
-
+            if (i == 0):
+                self.players[i].net.load()
         # draws a white background for each player
         self.screen.fill((255, 255, 255),
                          (self.players[0].offset[0], self.players[0].offset[1],
@@ -41,7 +42,7 @@ class Game:
 
         for p in self.players:
             self.draw(p)
-
+            
         pygame.display.update()
         self.clock = pygame.time.Clock()
 

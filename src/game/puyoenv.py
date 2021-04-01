@@ -19,7 +19,7 @@ class PuyoEnv:
         # several internal layers, each with an experimental size
         # finally an output layer, with 4 outputs (one corresponding to each action)
 
-        self.net = neuralnetwork.neural_network([self.w * self.h, 30, 4])
+        self.net = neuralnetwork.neural_network([(self.w * self.h) + 6 + 4, 30, 20, 4])
 
         # scoring variables
         self.chain = 0 # the current chain length
@@ -224,8 +224,22 @@ class PuyoEnv:
             for j in range(self.w):
                 board_as_floats.append(map_board_value_to_float(self.board[i][j]))
 
+        
+        next1 = [self.falling[0]['pos'][0], self.falling[0]['pos'][1], map_board_value_to_float(self.falling[0]['colour'])]
+        next2 = [self.falling[1]['pos'][0], self.falling[1]['pos'][1], map_board_value_to_float(self.falling[1]['colour'])]
+
+        #next1 = [float(x) for x in next1]
+        #next2 = [float(x) for x in next2]
+
+        if (self.buffer):
+            buf = [map_board_value_to_float(x) for x in self.buffer]
+        else:
+            buf = [0,0,0,0]
+
+        inputs = board_as_floats + next1 + next2
+
         # feed the board to the nn, get 'actions' decided by nn
-        actions = self.net.feed_forward(board_as_floats)
+        actions = self.net.feed_forward(inputs)
 
         # round the values to the nearest integer   
         actions = [int(round(x)) for x in actions]
