@@ -8,7 +8,9 @@ class PuyoEnv:
 
     def __init__(self, x_offset, y_offset,template=None):
 
-        self.finished = False;
+        self.longest_chain = 0
+
+        self.finished = False
 
         self.board = [[' ' for x in range(self.w)] for y in range(self.h)]
         self.prev_board = [[' ' for x in range(self.w)] for y in range(self.h)]
@@ -161,7 +163,7 @@ class PuyoEnv:
                     self.diff_colors_in_chain = set()
                     # the logic for checking if a player is done
                     if self.board[1][2] != ' ' and not self.finished:
-                        print("GAME OVER")
+                        #print("GAME OVER")
                         self.finished = True;
                         return False
                     else:
@@ -210,7 +212,10 @@ class PuyoEnv:
 
     def update_score(self):
         # https://puyonexus.com/wiki/Scoring
-        self.score += (10 * self.chain_size) * (get_color_bonus(self.diff_colors_in_chain) + get_group_bonus(self.chain_group_sizes))
+        if self.chain_size > self.longest_chain:
+            self.longest_chain = self.chain_size
+        prelim = (10 * self.chain_size) * (get_color_bonus(self.diff_colors_in_chain) + get_group_bonus(self.chain_group_sizes))
+        self.score += prelim * self.longest_chain
     def projected_score (self):
         return (10 * self.chain_size) * (get_color_bonus(self.diff_colors_in_chain) + get_group_bonus(self.chain_group_sizes))
 

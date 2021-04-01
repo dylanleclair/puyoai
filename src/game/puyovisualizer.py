@@ -4,6 +4,9 @@ import puyoenv
 import random
 import copy
 import neuralnetwork
+
+NUM_PLAYERS = 10
+
 def get_finished_player_count(players):
     playersDone = 0
     for player in players:
@@ -19,7 +22,7 @@ class Player(puyoenv.PuyoEnv):
     
 class Game:
     
-    def __init__(self, screen=(864, 480)):
+    def __init__(self, screen=(NUM_PLAYERS*6*24, 480)):
         pygame.init()
         self.screen = pygame.display.set_mode(screen)
         self.puyo = {'1': pygame.transform.scale(pygame.image.load('resource/r.png').convert_alpha(), (24, 24)),
@@ -31,7 +34,7 @@ class Game:
 
         self.players = []
 
-        for i in range(6):
+        for i in range(NUM_PLAYERS):
             self.players.append(Player(x_offset= i * 6 * 24, y_offset=0))
             if (i == 0):
                 self.players[i].net.load()
@@ -69,7 +72,7 @@ class Game:
                 if event.type == pygame.QUIT:
                     sys.exit()
 
-            if get_finished_player_count(self.players) < 3:
+            if get_finished_player_count(self.players) < (NUM_PLAYERS // 2):
                 for player in self.players:
                     if not player.finished:
                         if player.falling and not (counter % 3):
@@ -121,18 +124,21 @@ class Game:
 
                 for player in self.players:
                     player.net.set_fitness(player.score)
+                    # reset the longest chain
+                    player.longest_chain = 0
 
                 # next generation baby
-                self.players.sort(key=lambda x: x.net.fitness, reverse=False)
+                self.players.sort(key=lambda x: x.net.fitness, reverse=True)
 
                 # mutate
-                midpoint = len(self.players) // 2
+                midpoint = NUM_PLAYERS // 2
                 
                 fit = self.players[:midpoint]
                 fit[0].net.save()
+                print('this generation best fitness: ', fit[0].net.fitness)
                 index = midpoint
                 # assign new values to nets
-                while index < len(self.players):
+                while index < NUM_PLAYERS:
                     # replace each unfit network with either a mutated or crossed-over copy of the fitter networks
                     local_player = random.choice(fit)
                     self.players[index].net =  copy.deepcopy(local_player.net)
