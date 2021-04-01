@@ -68,7 +68,6 @@ class neural_network:
 
 
     def mutate(self):
-        print('mutation')
         # randomly mutate the biases
         # recall that the biases are a number associated with each node
         for i in range(len(self.biases)):

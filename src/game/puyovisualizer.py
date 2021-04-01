@@ -135,8 +135,13 @@ class Game:
                     local_player = random.choice(fit)
                     self.players[index].net =  copy.deepcopy(local_player.net)
                     self.players[index].net.mutate()
+                    index+=1
                 
                 # run again
+                for player in self.players:
+                    player.board = [[' ' for x in range(player.w)] for y in range(player.h)]
+                    player.prev_board = [[' ' for x in range(player.w)] for y in range(player.h)]
+                    player.finished = False
                 
 
 if __name__ == '__main__':
