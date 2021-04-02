@@ -1,15 +1,20 @@
 
 import random
 import numpy as np
+import collections
+from statistics import mean
+from sklearn import preprocessing as pp
 
 class neural_network:
     layers = []
 
+    previous_fitness = collections.deque([ 0 for x in range(20)])
+
     fitness = 0.0
 
-    MUTATION_RATE = 0.1
+    MUTATION_RATE = 0.2
 
-    MUTATION_STRENGTH = 0.7
+    MUTATION_STRENGTH = 0.5
 
     def init_neurons(self):
         self.neurons = []
@@ -43,7 +48,8 @@ class neural_network:
     
     # alters the network by feeding inputs through it, with a relu activation function
     def feed_forward(self, inputs):
-        
+        inputs = pp.normalize([inputs])
+        inputs = inputs[0]
         for i in range(len(inputs)):
             self.neurons[0][i] = inputs[i]
 
@@ -55,15 +61,17 @@ class neural_network:
                     val += self.weights[i-1][j][k] * self.neurons[i-1][k]; # the sum of an indivual node in previous layer
 
                 #if layer == len(self.layers)-2:
-                self.neurons[i][j] = sigmoid(val + self.biases[i][j]) # feed it forward!
+                    #self.neurons[i][j] = rectified(val + self.biases[i][j]) # feed it forward!
                 #else:
-                #    self.neurons[i][j] = rectified(val + self.biases[i][j]) # feed it forward!
+                    self.neurons[i][j] = rectified(val + self.biases[i][j]) # feed it forward!
 
         return self.neurons[1] # return the last layer in the network as the outputs
 
     # allows the fitness of the neural network to be set
     def set_fitness(self,fitness):
-        self.fitness = fitness
+        self.previous_fitness.popleft()
+        self.previous_fitness.append(fitness)
+        self.fitness = mean(self.previous_fitness)
 
 
     def mutate(self):

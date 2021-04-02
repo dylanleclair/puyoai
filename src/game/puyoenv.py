@@ -9,7 +9,7 @@ class PuyoEnv:
     def __init__(self, x_offset, y_offset,template=None):
 
         self.longest_chain = 0
-
+        self.time_alive = 0
         self.finished = False
 
         self.board = [[' ' for x in range(self.w)] for y in range(self.h)]
@@ -21,7 +21,7 @@ class PuyoEnv:
         # several internal layers, each with an experimental size
         # finally an output layer, with 4 outputs (one corresponding to each action)
 
-        self.net = neuralnetwork.neural_network([(self.w * self.h) + 6 + 4, 30, 20, 4])
+        self.net = neuralnetwork.neural_network([(self.w * self.h) + 6 + 4, 80, 4])
 
         # scoring variables
         self.chain = 0 # the current chain length
@@ -29,6 +29,8 @@ class PuyoEnv:
         self.score = 0 # the players score
         self.diff_colors_in_chain = set() # the size of this will let us determine a bonus
         self.chain_group_sizes = [] # the size of each group in a chain
+
+
 
         self.puyo_to_remove = set()
         self.falling = None
@@ -214,8 +216,9 @@ class PuyoEnv:
         # https://puyonexus.com/wiki/Scoring
         if self.chain_size > self.longest_chain:
             self.longest_chain = self.chain_size
-        prelim = (10 * self.chain_size) * (get_color_bonus(self.diff_colors_in_chain) + get_group_bonus(self.chain_group_sizes))
-        self.score += prelim * self.longest_chain
+        prelim = (self.chain) * (10 * self.chain_size) * (get_color_bonus(self.diff_colors_in_chain) + get_group_bonus(self.chain_group_sizes))
+        self.score += prelim
+
     def projected_score (self):
         return (10 * self.chain_size) * (get_color_bonus(self.diff_colors_in_chain) + get_group_bonus(self.chain_group_sizes))
 
@@ -224,7 +227,7 @@ class PuyoEnv:
     # indices: 0 = left, 1 = down, 2 = right, 3 = rotate 
     def act(self):
         board_as_floats = []
-
+        self.time_alive += 1
         for i in range(self.h):
             for j in range(self.w):
                 board_as_floats.append(map_board_value_to_float(self.board[i][j]))
