@@ -5,7 +5,7 @@ import random
 import copy
 import neuralnetwork
 
-NUM_PLAYERS = 10
+NUM_PLAYERS = 8
 
 def get_finished_player_count(players):
     playersDone = 0
@@ -43,6 +43,7 @@ class Game:
                          (self.players[0].offset[0], self.players[0].offset[1],
                           self.players[0].w * 24 * len(self.players), self.players[0].h * 24))
 
+    
         for p in self.players:
             self.draw(p)
             
@@ -70,9 +71,11 @@ class Game:
             self.clock.tick() # 60ms between calls
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
+                    # graph data from training
+                    
                     sys.exit()
 
-            if get_finished_player_count(self.players) < (NUM_PLAYERS // 2):
+            if get_finished_player_count(self.players) < (NUM_PLAYERS / 2):
                 for player in self.players:
                     if not player.finished:
                         if player.falling and not (counter % 3):
@@ -123,9 +126,11 @@ class Game:
             else:
 
                 for player in self.players:
-                    player.net.set_fitness(player.score)
+                    player.net.set_fitness(player.score / max(player.time_alive / 100000, 1))
                     # reset the longest chain
                     player.longest_chain = 0
+                    player.score = 0
+                    player.time_alive = 0
 
                 # next generation baby
                 self.players.sort(key=lambda x: x.net.fitness, reverse=True)
@@ -136,6 +141,7 @@ class Game:
                 fit = self.players[:midpoint]
                 fit[0].net.save()
                 print('this generation best fitness: ', fit[0].net.fitness)
+                
                 index = midpoint
                 # assign new values to nets
                 while index < NUM_PLAYERS:
