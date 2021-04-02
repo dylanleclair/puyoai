@@ -4,15 +4,16 @@ import numpy as np
 import collections
 from statistics import mean
 from sklearn import preprocessing as pp
+import copy
 
 class neural_network:
     layers = []
 
-    previous_fitness = collections.deque([ 0 for x in range(20)])
+    previous_fitness = collections.deque([ 0 for x in range(40)])
 
     fitness = 0.0
 
-    MUTATION_RATE = 0.2
+    MUTATION_RATE = 0.05
 
     MUTATION_STRENGTH = 0.5
 
@@ -92,8 +93,28 @@ class neural_network:
                     if (random.random() < self.MUTATION_RATE):
                         self.weights[i][j][k] += random.uniform(-self.MUTATION_RATE, self.MUTATION_STRENGTH)
 
-    def crossover(self):
-        print('crossover')
+    def crossover(self, other):
+        net = copy.deepcopy(self)
+        # randomly mutate the biases
+        # recall that the biases are a number associated with each node
+        for i in range(len(self.biases)):
+            for j in range(len(self.biases[i])):
+                coin = random.randint(0,1)
+                if coin:
+                    net.biases[i][j] = other.biases[i][j]
+
+
+        # randomly mutate the weights
+        # recall that the weights are the "edges" between the nodes of two layers in a network. 
+
+        for i in range(len(self.weights)):
+            for j in range(len(self.weights[i])):
+                for k in range(len(self.weights[i][j])):
+                    coin = random.randint(0,1)
+                    if coin:
+                        net.weights[i][j][k] = other.biases[i][j]
+        return net
+
 
     def save(self):
         file = open('optimal_model.txt', 'w')

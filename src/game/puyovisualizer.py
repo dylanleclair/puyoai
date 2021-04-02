@@ -4,8 +4,8 @@ import puyoenv
 import random
 import copy
 import neuralnetwork
-
-NUM_PLAYERS = 8
+import plot_results
+NUM_PLAYERS = 6
 
 def get_finished_player_count(players):
     playersDone = 0
@@ -31,13 +31,12 @@ class Game:
                      '4': pygame.transform.scale(pygame.image.load('resource/y.png').convert_alpha(), (24, 24))}
         self.x = pygame.image.load('resource/x.png').convert_alpha()
         
-
+        self.fitness_over_generations = []
         self.players = []
 
         for i in range(NUM_PLAYERS):
             self.players.append(Player(x_offset= i * 6 * 24, y_offset=0))
-            if (i == 0):
-                self.players[i].net.load()
+            #self.players[i].net.load()
         # draws a white background for each player
         self.screen.fill((255, 255, 255),
                          (self.players[0].offset[0], self.players[0].offset[1],
@@ -72,10 +71,10 @@ class Game:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     # graph data from training
-                    
+                    plot_results.graph_fitness_over_generations(self.fitness_over_generations)
                     sys.exit()
 
-            if get_finished_player_count(self.players) < (NUM_PLAYERS / 2):
+            if get_finished_player_count(self.players) < (NUM_PLAYERS):
                 for player in self.players:
                     if not player.finished:
                         if player.falling and not (counter % 3):
@@ -141,14 +140,17 @@ class Game:
                 fit = self.players[:midpoint]
                 fit[0].net.save()
                 print('this generation best fitness: ', fit[0].net.fitness)
-                
-                index = midpoint
+                self.fitness_over_generations.append(fit[0].net.fitness)
+                index = 1
                 # assign new values to nets
                 while index < NUM_PLAYERS:
-                    # replace each unfit network with either a mutated or crossed-over copy of the fitter networks
-                    local_player = random.choice(fit)
-                    self.players[index].net =  copy.deepcopy(local_player.net)
-                    self.players[index].net.mutate()
+                    if index <= midpoint:
+                        fit[index].net = fit[index].net.crossover(fit[index + 1].net) 
+                    else:
+                        # replace each unfit network with either a mutated or crossed-over copy of the fitter networks
+                        local_player = random.choice(fit)
+                        self.players[index].net =  copy.deepcopy(local_player.net)
+                        self.players[index].net.mutate()
                     index+=1
                 
                 # run again

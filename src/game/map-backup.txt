@@ -1,3 +1,7 @@
 mostrecent
 
 shape: ([(self.w * self.h) + 6 + 4, 60, 50, 40, 20, 4])
+
+gen-fitness-pre-cross:
+
+[(self.w * self.h) + 6 + 4, 140, 140, 4]
