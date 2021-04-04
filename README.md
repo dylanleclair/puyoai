@@ -79,7 +79,7 @@ I gave the AI a few hours to train with these changes, and it produced the follo
 
 ![](images/gen-fitness-buf20-80-4.png)
 
-It seemed to achieve the consistency I wanted, usually getting an average fitness of 2000 across 35 generations. I didn't let it run any furhter since it's improvement seemed to halt. 
+It seemed to achieve the consistency I wanted, usually getting an average fitness of 2000 across 35 generations. I didn't let it run any further since it's improvement seemed to halt. 
 
 To see if it could achieve better performance, I added some more complexity to the neural network: I changed the internal layers to be 2 layers of 150 internal nodes each.
 
