@@ -1,7 +1,7 @@
 # Puyo AI
  an ai for puyo puyo - a puzzle / stacking game
 
-[](images/longtraining.gif)
+![](images/long_training.gif)
 
 # Approaching the problem
 
@@ -23,7 +23,7 @@ My goal was to try and replicate this behaviour.
 
 ## A glance at how it works
 
-[](images/glance.jpg)
+![](images/glance.jpg)
 
 The system itself is fairly simple: the board is fed into the neural network as input, and the move that the AI should make is taken as output. 
 
@@ -47,7 +47,7 @@ I ended up playing with the fitness function a lot, and tried quite a few things
 
 Early on, with the additive model, I had managed to get some pretty decent results. I left it to train for a few hours, and already you could see some good results: 
 
-[](images/understands_color.gif)
+![](images/understands_color.gif)
 
 The above image is two players, side by side. Looking at the first player, you can see that it appears to have at least a basic understanding of matching colours. 
 
@@ -55,7 +55,7 @@ This was not producing very complex chaining behaviour, so I added a multiplier 
 
 This is when things started to get really challenging - AIs that managed to get a chain by coincidence would become the most fit, and eventually the AI developed a strategy to chain: 
 
-[](images/emergence_example.gif)
+![](images/emergence_example.gif)
 
 It would build up a big stack of puyos on one side of the board and try to trigger it by placing puyos in the open column. For the most part, this was pretty good for how simple the model was: I was using a neural network with 2 layers of 50 or so internal nodes. 
 
@@ -65,7 +65,7 @@ And so, I adopted a model where the fitness of each player would be calculated b
 
 Due to the mechanism that would start a new generation when most of the players finished, some of the better players would never get a chance to trigger their chains -- and so I got some really inconsistent results: 
 
-[](images/simple_nn_result.png)
+![](images/simple_nn_results.png)
 
 To try and achieve a more consistently good AI, that could perform well no matter what puyos it was given, I toned down the chain multipler in the score a LOT.
 
@@ -77,7 +77,7 @@ I should note that after this point, I never changed the fitness score in order 
 
 I gave the AI a few hours to train with these changes, and it produced the following results: 
 
-[](gen-fitness-buf20-80-4.png)
+![](images/gen-fitness-buf20-80-4.png)
 
 It seemed to achieve the consistency I wanted, usually getting an average fitness of 2000 across 35 generations. I didn't let it run any furhter since it's improvement seemed to halt. 
 
@@ -85,7 +85,7 @@ To see if it could achieve better performance, I added some more complexity to t
 
 My goal was achieved:
 
-[](gen-fitness-pre-cross.png)
+![](images/gen-fitness-pre-cross.png)
 
 The AI was now able to achieve a better score across generations, capping out between 3000 and 4000, usually somewhere in the middle. 
 
@@ -97,7 +97,7 @@ Unfortunately, the results weren't much more impressive than the intermediate ne
 
 You can see them here: 
 
-[](outputaspng.png)
+![](images/outputaspng.png)
 
 Across 50 generations, It never really broke the 4000 score mark, but was also fairly inconsistent - with fitness dipping back down to the 2500-3000 score range. 
 
@@ -110,7 +110,7 @@ In the future (if I revisit this project), I would like to change how the networ
 Thanks for reading! :) 
 
 
-# A last note: 
+# A last note: Running the code 
 
 To run the code for yourself, you can clone this repo, navigate to the game folder and run: 
 
