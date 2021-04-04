@@ -136,8 +136,9 @@ class Game:
 
                 # mutate
                 midpoint = NUM_PLAYERS // 2
-                
-                fit = self.players[:midpoint]
+                for player in self.players:
+                    print(player.net.fitness)
+                fit = self.players
                 fit[0].net.save()
                 print('this generation best fitness: ', fit[0].net.fitness)
                 self.fitness_over_generations.append(fit[0].net.fitness)

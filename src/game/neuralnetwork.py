@@ -112,7 +112,7 @@ class neural_network:
                 for k in range(len(self.weights[i][j])):
                     coin = random.randint(0,1)
                     if coin:
-                        net.weights[i][j][k] = other.biases[i][j]
+                        net.weights[i][j][k] = other.weights[i][j][k]
         return net
 
 

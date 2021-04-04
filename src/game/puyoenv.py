@@ -23,7 +23,7 @@ class PuyoEnv:
 
         # TODO: calculate a list of available placements given the board, set these as the 'output' of NN 
         # I'm interested to see how this affects how the ai solves the problem
-        self.net = neuralnetwork.neural_network([(self.w * self.h) + 6 + 4, 250, 250, 250, 250, 4])
+        self.net = neuralnetwork.neural_network([(self.w * self.h) + 6 + 4, 250, 250, 125, 125, 4])
 
         # scoring variables
         self.chain = 0 # the current chain length
