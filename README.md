@@ -23,7 +23,7 @@ My goal was to try and replicate this behaviour.
 
 ## A glance at how it works
 
-![](images/glance.jpg)
+![](images/glance.JPG)
 
 The system itself is fairly simple: the board is fed into the neural network as input, and the move that the AI should make is taken as output. 
 
